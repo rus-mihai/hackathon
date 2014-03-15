@@ -12,7 +12,11 @@ section#body {
 header label {
     font-weight: normal;
     margin-right: 5px;
-    margin-top: 4px;
+    margin-top: 6px;
+    color: #999;
+    font-size: 12px;
+    font-style: italic;
+    font-weight: normal;
 }
     
 header .bubble-link {
@@ -26,14 +30,21 @@ header .bubble-link ul {
 	display: none;
     right: 0;
     top: 30px;
-    background-color: #999;
+    background-color: #bfbfbf;
     list-style: none;
     padding: 7px 20px;
-    color: white;
+    color: #444;
+    font-size: 13px;
+	border-radius: 0 0 0 5px;
+}
+
+header .bubble-link ul li {
+	border-bottom: 1px dotted #D8D8D8;
+    margin-bottom: 3px;
 }
 
 header .bubble-link:hover {
-	background-color: #999;
+	background-color: #bfbfbf;
 }
 
 header .bubble-link:hover ul {
@@ -42,27 +53,39 @@ header .bubble-link:hover ul {
 
 header .bubble-link:after {
 	content: " ";
-	width: 20px;
-	height: 20px;
-	background-color: green;
+	width: 18px;
+	height: 18px;
+	background-color: #43dd51;
 	border-radius: 10px;
 	display: block;
-	margin: 4px;
+	margin: 5px;
 }
 
 footer {
-	background-color: black;
-	color: white;
+	background-color: rgba(0,0,0,0.8);
 	padding: 20px;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+}
+
+footer > div {
+	width: 1060px;
+	margin: auto;
 }
 
 footer ul {
 	list-style: none;
-	min-width: 400px;
+	min-width: 300px;
+	margin-left: 50px;
+	color: white;
+	font-size: 11px;
 }
 
 footer ul li:first-child {
 	font-weight: bold;
+	color: #DDD;
+	font-size: 12px;
 }
 
 /* Adjust chart colors */
