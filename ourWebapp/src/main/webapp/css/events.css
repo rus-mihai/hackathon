@@ -1,0 +1,50 @@
+#carousel ul {
+    list-style: none;
+    display: block;
+}
+/* Polaroid background image put here */
+/* Need to set the width and height of the polaroid frame */
+#carousel li {
+    font-size: 10px;
+    color: #999;
+    text-align: center;
+    width: 150px;
+    height: 178px;
+    padding: 0;
+    margin: 6px;
+    display: block;
+    float: left;
+    position:relative;
+}
+/* Position the image to fit into the polaroid frame */
+/* We use margin-top to bump it down */
+#carousel li img {
+    width:100px;
+    height:135px;
+    margin-top:14px;
+}
+/* We put the glare background in here */
+/* We make it a block element and absolute position */
+/* z-index to make sure it appear on top of the image */
+#carousel li a {
+    width:100px;
+    height:135px;
+    z-index:2;
+    top:14px;
+    left:16px;
+    text-align: center;
+    color: #999;
+    text-decoration:none;
+}            
+.clearfix {
+    float: none;
+    clear: both;
+}
+
+.center
+{
+margin-left:auto;
+margin-right:auto;
+width:50%;
+}
+
