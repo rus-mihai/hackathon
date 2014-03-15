@@ -16,24 +16,30 @@
 	        
 	        var authorizationsByCity = locationDimension.group().reduce(
 	        	function(p, v) {
-                	p.totalRequested += v.VALOARE_ELIGIBILA_CERUTA;
-                	p.totalAuthorised += v.VALOARE_AUTORIZATA;
-                	p.totalReimbursement += v.VALOARE_RAMBURSATA;
+	        		if (v.VALOARE_ELIGIBILA_CERUTA)
+	        			p.totalRequested += parseInt(v.VALOARE_ELIGIBILA_CERUTA.replace(',', ''));
+                	if (v.VALOARE_AUTORIZATA)
+                		p.totalAuthorised += parseInt(v.VALOARE_AUTORIZATA.replace(',', ''));
+                	if (v.VALOARE_RAMBURSATA)
+                		p.totalReimbursement += parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
                 	p.count++;
-                	p.count = 1000;
                     
-                	p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
+                	if (p.totalRequested)
+                		p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
                 	
                 	return p;
                 },
                 function(p, v) {
-                	p.totalRequested -= v.VALOARE_ELIGIBILA_CERUTA;
-                	p.totalAuthorised -= v.VALOARE_AUTORIZATA;
-                	p.totalReimbursement -= v.VALOARE_RAMBURSATA;
+                	if (v.VALOARE_ELIGIBILA_CERUTA)
+                		p.totalRequested -= parseInt(v.VALOARE_ELIGIBILA_CERUTA.replace(',', ''));
+                	if (v.VALOARE_AUTORIZATA)
+                		p.totalAuthorised -= parseInt(v.VALOARE_AUTORIZATA.replace(',', ''));
+                	if (v.VALOARE_RAMBURSATA)
+                		p.totalReimbursement -= parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
                 	p.count--;
-                	p.count = 1000;
 
-                	p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
+                	if (p.totalRequested)
+                		p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
 
                 	return p;
                 },
@@ -51,22 +57,30 @@
 
 	        var authorizationsByYear = yearDimension.group().reduce(
 	                function(p, v) {
-	                	p.totalRequested += v.VALOARE_ELIGIBILA_CERUTA;
-	                	p.totalAuthorised += v.VALOARE_AUTORIZATA;
-	                	p.totalReimbursement += v.VALOARE_RAMBURSATA;
+	                	if (v.VALOARE_ELIGIBILA_CERUTA)
+	                		p.totalRequested += parseInt(v.VALOARE_ELIGIBILA_CERUTA.replace(',', ''));
+                		if (v.VALOARE_AUTORIZATA)
+                			p.totalAuthorised += parseInt(v.VALOARE_AUTORIZATA.replace(',', ''));
+            			if (v.VALOARE_RAMBURSATA)
+            				p.totalReimbursement += parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
 	                	p.count++;
 	                    
-	                	p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
-	                	
+	                	if (p.totalRequested)
+	                		p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
+
 	                	return p;
 	                },
 	                function(p, v) {
-	                	p.totalRequested -= v.VALOARE_ELIGIBILA_CERUTA;
-	                	p.totalAuthorised -= v.VALOARE_AUTORIZATA;
-	                	p.totalReimbursement -= v.VALOARE_RAMBURSATA;
+	                	if (v.VALOARE_ELIGIBILA_CERUTA)
+	                		p.totalRequested -= parseInt(v.VALOARE_ELIGIBILA_CERUTA.replace(',', ''));
+	                	if (v.VALOARE_ELIGIBILA_CERUTA)
+	                		p.totalAuthorised -= parseInt(v.VALOARE_AUTORIZATA.replace(',', ''));
+	                	if (v.VALOARE_RAMBURSATA)
+	                		p.totalReimbursement -= parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
 	                	p.count--;
 
-	                	p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
+	                	if (p.totalRequested)
+	                		p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
 
 	                	return p;
 	                },
@@ -82,7 +96,9 @@
 				                .dimension(locationDimension)
 				                .group(authorizationsByCity)
 				                .radiusValueAccessor(function(p) {
-				                    return p.value.count;
+				                	if (!p)
+				                		return 1;
+				                    return p.value.count + 100;
 				                })
 				                .r(d3.scale.linear().domain([0, 200000]))
 				                .colors(["#ff7373","#ff4040","#ff0000","#bf3030","#a60000"])
@@ -96,47 +112,20 @@
 				                            + "\nSuma authorizata: " + numberFormat(d.value.totalAuthorised)
 				                            + "\nSuma rambursata: " + numberFormat(d.value.totalReimbursement);
 				                })
-				                .point("bihor", 132, 224)
-				                .point("suceava", 337, 178)
-								.point("botosani", 396, 148)
-								.point("iasi", 425, 201)
-								.point("neamt", 368, 216)
-								.point("bacau", 396, 261)
-								.point("vaslui", 453, 256)
-								.point("galati", 454, 310)
-								.point("vrancea", 309, 310)
-								.point("buzau", 394, 348)
-								.point("braila", 454, 364)
-								.point("constanta", 494, 426)
-								.point("tulcea", 536, 362)
-								.point("mehedinti", 166, 415)
-								.point("dolj", 213, 444)
-								.point("gorj", 196, 379)
-								.point("valcea", 243, 370)
-								.point("olt", 261, 436)
-								.point("arges", 284, 369)
-								.point("teleorman", 306, 451)
-								.point("giurgiu", 354, 445)
-								.point("ialomita", 423, 400)
-								.point("calarasi", 408, 424)
-								.point("prahova", 355, 367)
-								.point("bucuresti", 363, 412)
-								.point("satu mare", 180, 156)
-								.point("maramures", 233, 168)
-								.point("bihor", 132, 224)
-								.point("arad", 107, 274)
-								.point("timis", 75, 316)
-								.point("caras-severin", 120, 364)
-								.point("hunedoara", 171, 315)
-								.point("alba", 209, 283)
-								.point("sibiu", 253, 305)
-								.point("brasov", 306, 312)
-								.point("covasna", 354, 303)
-								.point("harghita", 328, 249)
-								.point("mures", 270, 250)
-								.point("bistrita-nasaud", 271, 201)
-								.point("cluj", 214, 235)
-								.point("salaj", 182, 204)
+				                .point("galati", 364, 400)
+//				                .point("buzau", 395.5, 383)
+//				                .point("Vancouver", 40.5, 316)
+//				                .point("galati", 417, 370)
+//				                .point("Edmonton", 120, 299)
+//				                .point("Saskatoon", 163, 322)
+//				                .point("Winnipeg", 229, 345)
+//				                .point("Calgary", 119, 329)
+//				                .point("Quebec", 431, 351)
+//				                .point("Halifax", 496, 367)
+//				                .point("St. John's", 553, 323)
+//				                .point("Yukon", 44, 176)
+//				                .point("Northwest Territories", 125, 195)
+//				                .point("Nunavut", 273, 188)
 				                .debug(false);
 	
 		        genericTimeChart.width(360)

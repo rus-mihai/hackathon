@@ -301,9 +301,6 @@ dc.printers.filter = function (filter) {
 
 dc.pluck = function(n,f) {
     if (!f) return function(d) {
-    	if (!d) {
-    		return 1;
-    	}
     	return d[n];
 	};
     return function(d,i) { return f.call(d,d[n],i); };
