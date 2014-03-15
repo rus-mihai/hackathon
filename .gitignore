@@ -8,3 +8,5 @@
 *.war
 *.jar
 *.class
+ourWebapp/.buildpath
+ourWebapp/src/main/webapp/js/Copy of charts.js
