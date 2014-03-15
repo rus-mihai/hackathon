@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * 
  * @author mihairus
- *
+ * 
  */
 public class DataScrapperRiverFeedDefinition {
 
@@ -15,23 +15,30 @@ public class DataScrapperRiverFeedDefinition {
   private int updateRate;
   private List<String> includes;
   private List<String> excludes;
+  private final List<String> fields;
+
+  public List<String> getFields() {
+    return fields;
+  }
 
   public DataScrapperRiverFeedDefinition() {
-    this(null, null, 0, new ArrayList<String>(), new ArrayList<String>());
+    this(null, null, 0, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
   }
 
   public DataScrapperRiverFeedDefinition(final String feedname, final String url, final int updateRate) {
-    this(feedname, url, updateRate, new ArrayList<String>(), new ArrayList<String>());
+    this(feedname, url, updateRate, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
   }
 
-  public DataScrapperRiverFeedDefinition(final String feedname, final String url, final int updateRate, final List<String> includes, final List<String> excludes) {
-    assert (excludes != null);
-    assert (includes != null);
+  public DataScrapperRiverFeedDefinition(final String feedname, final String url, final int updateRate, final List<String> includes,
+      final List<String> excludes, final List<String> fields) {
+    assert excludes != null;
+    assert includes != null;
     this.includes = includes;
     this.excludes = excludes;
     this.feedname = feedname;
     this.url = url;
     this.updateRate = updateRate;
+    this.fields = fields;
   }
 
   public String getFeedname() {

@@ -3,18 +3,25 @@ package ro.thedot.data.scrapper.river;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.File;
-import java.io.InputStream;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONArray;
-import net.sf.json.xml.XMLSerializer;
+import net.sf.json.JSONObject;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.elasticsearch.ExceptionsHelper;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -73,13 +80,15 @@ public class DataScrapperRiver extends AbstractRiverComponent implements River {
 
       final String[] includes = DataScrapperRiverUtil.buildArrayFromSettings(settings.settings(), "lx.includes");
       final String[] excludes = DataScrapperRiverUtil.buildArrayFromSettings(settings.settings(), "lx.excludes");
+      final String[] fields = DataScrapperRiverUtil.buildArrayFromSettings(settings.settings(), "lx.fields");
 
-      lxDefinition = new DataScrapperRiverFeedDefinition(feedname, url, updateRate, Arrays.asList(includes), Arrays.asList(excludes));
+      lxDefinition = new DataScrapperRiverFeedDefinition(feedname, url, updateRate, Arrays.asList(includes), Arrays.asList(excludes), Arrays.asList(fields));
     } else {
       final String url = "/esdir";
       logger.warn("You didn't define the lx url. Switching to defaults : [{}]", url);
       final int updateRate = 60 * 60 * 1000;
-      lxDefinition = new DataScrapperRiverFeedDefinition("defaultlocaldir", url, updateRate, Arrays.asList("*.xml", "*.pdf"), Arrays.asList("*.exe"));
+      lxDefinition = new DataScrapperRiverFeedDefinition("defaultlocaldir", url, updateRate, Arrays.asList("*.xml", "*.pdf"), Arrays.asList("*.exe"),
+          Arrays.asList(""));
     }
 
     if (settings.settings().containsKey("index")) {
@@ -112,8 +121,8 @@ public class DataScrapperRiver extends AbstractRiverComponent implements River {
       }
     }
     /*
-     * try { // If needed, we create the new mapping for files pushMapping(indexName, typeName, DataScrapperRiverUtil.buildLxFileMapping(typeName)); } catch (final
-     * Exception e) { logger.warn("failed to create mapping for [{}/{}], disabling river...", e, indexName, typeName); return; }
+     * try { // If needed, we create the new mapping for files pushMapping(indexName, typeName, DataScrapperRiverUtil.buildLxFileMapping(typeName)); } catch
+     * (final Exception e) { logger.warn("failed to create mapping for [{}/{}], disabling river...", e, indexName, typeName); return; }
      */
 
     // We create as many Threads as there are feeds
@@ -382,8 +391,9 @@ public class DataScrapperRiver extends AbstractRiverComponent implements River {
     private Collection<String> getFolderDirectory(final String path) throws Exception {
       final Collection<String> files = new ArrayList<String>();
 
-      final SearchResponse response = client.prepareSearch(indexName).setSearchType(SearchType.QUERY_AND_FETCH).setTypes(DataScrapperRiverUtil.INDEX_TYPE_FOLDER)
-          .setQuery(QueryBuilders.termQuery(DataScrapperRiverUtil.DIR_FIELD_PATH_ENCODED, path)).setFrom(0).setSize(50000).execute().actionGet();
+      final SearchResponse response = client.prepareSearch(indexName).setSearchType(SearchType.QUERY_AND_FETCH)
+          .setTypes(DataScrapperRiverUtil.INDEX_TYPE_FOLDER).setQuery(QueryBuilders.termQuery(DataScrapperRiverUtil.DIR_FIELD_PATH_ENCODED, path)).setFrom(0)
+          .setSize(50000).execute().actionGet();
 
       if (response.getHits() != null && response.getHits().getHits() != null) {
         for (final SearchHit hit : response.getHits().getHits()) {
@@ -404,28 +414,75 @@ public class DataScrapperRiver extends AbstractRiverComponent implements River {
      * @throws Exception
      */
     private void indexFile(final ScanStatistic stats, final File file) throws Exception {
-      final InputStream inputStream = DataScrapperRiverUtil.retrieveStreamNoBOM(file);
-      final XMLSerializer xmlSerializer = new XMLSerializer();
-      final JSON jsonO = xmlSerializer.readFromStream(inputStream);
+      // final InputStream inputStream = DataScrapperRiverUtil.retrieveStreamNoBOM(file);
+      // final XMLSerializer xmlSerializer = new XMLSerializer();
+      // final JSON jsonO = xmlSerializer.readFromStream(inputStream);
 
-      // TODO this is a hack, any @ is removed, so if there is something in the content will also be removed.
-      // i did this because the attributes in xml elements like compid=1, are serialized to JSON as @compid, and this leads to errors in different frameworks in
-      // js.
-      final String contentAsString = jsonO.toString().replace("@", "");
-      final JSONArray jsonArray = JSONArray.fromObject(contentAsString);
+      final FileInputStream excelFile = new FileInputStream(file);
+      final Workbook exWorkBook = WorkbookFactory.create(excelFile);
 
+      final Sheet sheet = exWorkBook.getSheetAt(0);
+      // Iterate through each rows one by one
+      final Iterator<Row> rowIterator = sheet.iterator();
+      Map<Integer, String> createKeyMap = null;
       final Map<String, Object> filesMap = new HashMap<String, Object>();
-      filesMap.put("files", jsonArray);
-      final String fileName = file.getName();
-      final String detectLanguage = DataScrapperRiverUtil.detectLanguage(fileName);
-      filesMap.put("language", detectLanguage);
-      final String detectChannel = DataScrapperRiverUtil.detectChannel(fileName);
-      filesMap.put("channel", detectChannel);
-      final String retrieveFundCode = DataScrapperRiverUtil.retrieveFundCode(fileName);
-      filesMap.put("fund", retrieveFundCode);
-
-      bulk.add(client.prepareIndex(indexName, typeName, retrieveFundCode + "_" + detectChannel + "_" + detectLanguage).setSource(filesMap));
+      final JSONArray jsonArray = new JSONArray();
+      while (rowIterator.hasNext()) {
+        final Row row = rowIterator.next();
+        if (row.getRowNum() == 0) {
+          createKeyMap = createKeyMap(row);
+        } else {
+          final JSONObject object = new JSONObject();
+          final Iterator<Cell> cellIterator = row.cellIterator();
+          while (cellIterator.hasNext()) {
+            final Cell cell = cellIterator.next();
+            if (createKeyMap.keySet().contains(cell.getColumnIndex())) {
+              switch (cell.getCellType()) {
+              case Cell.CELL_TYPE_NUMERIC:
+                object.put(createKeyMap.get(cell.getColumnIndex()), cell.getNumericCellValue());
+                break;
+              case Cell.CELL_TYPE_STRING:
+                object.put(createKeyMap.get(cell.getColumnIndex()), cell.getStringCellValue());
+                break;
+              }
+            }
+          }
+          // jsonArray.add(object);
+          // filesMap.put("results", jsonArray);
+          bulk.add(client.prepareIndex(indexName, typeName, object.get(createKeyMap.get(0)).toString()).setSource(object));
+        }
+      }
+      excelFile.close();
+      // final String contentAsString = jsonO.toString().replace("@", "");
+      // final JSONArray jsonArray = JSONArray.fromObject(contentAsString);
+      //
+      // final String fileName = file.getName();
+      // final String detectLanguage = DataScrapperRiverUtil.detectLanguage(fileName);
+      // filesMap.put("language", detectLanguage);
+      // final String detectChannel = DataScrapperRiverUtil.detectChannel(fileName);
+      // filesMap.put("channel", detectChannel);
+      // final String retrieveFundCode = DataScrapperRiverUtil.retrieveFundCode(fileName);
+      // filesMap.put("fund", retrieveFundCode);
+      //
       commitBulkIfNeeded();
+    }
+
+    private Map<Integer, String> createKeyMap(final Row row) {
+      final List<String> fields = lxDefinition.getFields();
+
+      final Iterator<Cell> cellIterator = row.cellIterator();
+      final Map<Integer, String> values = new LinkedHashMap<Integer, String>();
+
+      while (cellIterator.hasNext()) {
+        final Cell cell = cellIterator.next();
+        for (final String field : fields) {
+          if (cell.getStringCellValue().equals(field)) {
+            values.put(cell.getColumnIndex(), field);
+          }
+        }
+      }
+      return values;
+
     }
 
     /**
@@ -440,7 +497,8 @@ public class DataScrapperRiver extends AbstractRiverComponent implements River {
           indexName,
           DataScrapperRiverUtil.INDEX_TYPE_FOLDER,
           file.getAbsolutePath(),
-          jsonBuilder().startObject().field(DataScrapperRiverUtil.DIR_FIELD_NAME, file.getName()).field(DataScrapperRiverUtil.DIR_FIELD_ROOT_PATH, stats.getRootPathId())
+          jsonBuilder().startObject().field(DataScrapperRiverUtil.DIR_FIELD_NAME, file.getName())
+              .field(DataScrapperRiverUtil.DIR_FIELD_ROOT_PATH, stats.getRootPathId())
               .field(DataScrapperRiverUtil.DIR_FIELD_VIRTUAL_PATH, computeVirtualPathName(stats, file.getParent()))
               .field(DataScrapperRiverUtil.DIR_FIELD_PATH_ENCODED, file.getParent()).endObject());
     }
@@ -457,8 +515,9 @@ public class DataScrapperRiver extends AbstractRiverComponent implements River {
           indexName,
           DataScrapperRiverUtil.INDEX_TYPE_FOLDER,
           file.getAbsolutePath(),
-          jsonBuilder().startObject().field(DataScrapperRiverUtil.DIR_FIELD_NAME, file.getName()).field(DataScrapperRiverUtil.DIR_FIELD_ROOT_PATH, stats.getRootPathId())
-              .field(DataScrapperRiverUtil.DIR_FIELD_VIRTUAL_PATH, (String) null).field(DataScrapperRiverUtil.DIR_FIELD_PATH_ENCODED, file.getParent()).endObject());
+          jsonBuilder().startObject().field(DataScrapperRiverUtil.DIR_FIELD_NAME, file.getName())
+              .field(DataScrapperRiverUtil.DIR_FIELD_ROOT_PATH, stats.getRootPathId()).field(DataScrapperRiverUtil.DIR_FIELD_VIRTUAL_PATH, (String) null)
+              .field(DataScrapperRiverUtil.DIR_FIELD_PATH_ENCODED, file.getParent()).endObject());
     }
 
     /**

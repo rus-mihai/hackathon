@@ -15,20 +15,20 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
 
 import ro.thedot.data.scrapper.constants.ChannelsEnum;
+import ro.thedot.data.scrapper.constants.DataScrapperRiverConstants;
 import ro.thedot.data.scrapper.constants.FundCodesEnum;
 import ro.thedot.data.scrapper.constants.LanguagesEnum;
-import ro.thedot.data.scrapper.constants.DataScrapperRiverConstants;
 
 /**
  * 
  * @author mihairus
- *
+ * 
  */
 public class DataScrapperRiverUtil {
 
   public static final String INDEX_TYPE_DOC = "doc";
   public static final String INDEX_TYPE_FOLDER = "folder";
-  public static final String INDEX_TYPE_LX = "lxRiver";
+  public static final String INDEX_TYPE_LX = "excelRiver";
 
   public static final String DOC_FIELD_NAME = "name";
   public static final String DOC_FIELD_DATE = "postDate";
