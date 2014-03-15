@@ -37,7 +37,7 @@ for (var judet in ro) {
             .click(function(){
             	$("#mapCluj").fadeOut('slow');
         		$('#bubble-map').fadeIn('slow');
-        		$('.chart').show();
+        		$('.chart, .reset').show();
             });
         
         // unde punem numele prescurtate ale judetelor
