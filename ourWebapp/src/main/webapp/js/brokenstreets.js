@@ -178,7 +178,7 @@ var color1 = '#ff6200', color2= '#4380d3';
 		$('a.play').removeClass('loading').text('Play All');
 		$('a.play,a.stop').toggle();
 		clearInterval(playBackInterval);
-		playBackLoop=60;
+		playBackLoop=-1;
 		
 		playBackInterval = setInterval(function() {
 			playBackLoop++;
@@ -435,7 +435,7 @@ var color1 = '#ff6200', color2= '#4380d3';
 		if (str[1].length==1) {
 			str[1] = '0' + str[1]; 
 		}
-		if (str[2] === '20') {
+		if (str[2] === '20' || str[2] === '13') {
 			str[2] = '2014';
 		}
 		if (str[2].length==2) {
