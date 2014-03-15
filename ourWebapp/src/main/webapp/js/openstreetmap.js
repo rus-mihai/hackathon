@@ -13,6 +13,14 @@ var map = new L.Map('map');
 	map.addLayer(osm);
 	
 	
+	if (navigator.geolocation) {
+	  navigator.geolocation.getCurrentPosition(function(position){
+		  map.setView(new L.LatLng(position.coords.latitude, position.coords.longitude),15);
+		  L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+	  });
+	}
+	
+	
 	var GJ = kizzy('streetGeoJson');
 	
 	var roadStyle = {
