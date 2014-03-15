@@ -8,8 +8,8 @@
 
 	    var genericTimeChart = dc.barChart("#generic-time-chart");
 	    var subcaseTimeChart = dc.lineChart("#subcase-time-chart");
-	    var bubbleOverlayChart = dc.bubbleOverlay("#harta")
-	            				   .svg(d3.select("#harta svg"));
+	    var bubbleOverlayChart = dc.bubbleOverlay("#bubble-map")
+	            				   .svg(d3.select("#bubble-map svg"));
 
 	    d3.csv("contracte-rambursari-new.csv", function(csv) {
 	        var data = crossfilter(csv),
@@ -46,7 +46,26 @@
                 	return p;
                 },
                 function(p, v) {
-                	throw "Operation not supported";
+                	if (v.VALOARE_ELIGIBILA_CERUTA)
+	        			p.totalRequested -= parseInt(v.VALOARE_ELIGIBILA_CERUTA.replace(',', ''));
+	            	if (v.VALOARE_AUTORIZATA)
+	            		p.totalAuthorised -= parseInt(v.VALOARE_AUTORIZATA.replace(',', ''));
+	            	if (v.VALOARE_RAMBURSATA)
+	            		p.totalReimbursement -= parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
+	            	p.count++;
+
+	            	if (p.count > MAX_COUNT) {
+	            		MAX_COUNT = p.count;
+	            	} else if (MIN_COUNT == 0  || p.count < MIN_COUNT) {
+	            		MIN_COUNT = p.count;
+	            	}
+	            	if (p.totalReimbursement > MAX_REIMBURSEMENT) {
+	            		MAX_REIMBURSEMENT = p.totalReimbursement;
+	            	} else if ( MIN_REIMBURSEMENT  == 0 || p.totalReimbursement < MIN_REIMBURSEMENT) {
+	            		MIN_REIMBURSEMENT = p.totalReimbursement;
+	            	}
+	
+	            	return p;
                 },
                 function() {
                     return {
@@ -171,6 +190,7 @@
 				                .debug(false);
 	
 		        genericTimeChart.width(360)
+								.rangeChart(subcaseTimeChart	)
 				                .height(180)
 				                .margins({top: 40, right: 50, bottom: 30, left: 80})
 				                .dimension(yearDimension)

@@ -1,28 +1,79 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="UTF-8">
+		<meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
 
 		<link rel="stylesheet" type="text/css" href="css/lib/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/lib/normalize.css">
 		<link rel="stylesheet" type="text/css" href="css/lib/dc.css">
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>
 	
 	<body>
-		<section id="charts">
-			<div id="harta"></div>
-			<div class="span4">
-				<div id="generic-time-chart" class="chart">
-					<strong>Evolutia numarului de proiecte</strong>
-					<div class="clearfix"></div>
-				</div>
-
-				<div id="subcase-time-chart" class="chart">
-					<strong>Suma totala a investiilor</strong>
-					<div class="clearfix"></div>
-				</div>
-			</div>
+		<header>
+			<a class="back-arrow pull-left"></a>
+			
+			<a class="bubble-link pull-right">
+				<ul>
+					<li>Vreau sa parchez</li>
+					<li>Vreau sa ies in oras</li>
+					<li>Vreau sa investesc in Cluj</li>
+					<li>Vreau informatii demografice</li>
+				</ul>
+			</a>
+			<label class="pull-right">pentru a afla ce vrei, foloseste bulina</label>
+		</header>
+		
+		<section id="body">
+			<section id="charts" class="clearfix">
+				<div id="bubble-map"></div>
+					<div id="generic-time-chart" class="chart span4">
+						<strong>Evolutia numarului de proiecte</strong>
+						<div class="clearfix"></div>
+					</div>
+	
+					<div id="subcase-time-chart" class="chart span4">
+						<strong>Suma totala a investiilor</strong>
+						<div class="clearfix"></div>
+					</div>
+			</section>
 		</section>
+		
+		<footer class="clearfix">
+			<ul>
+				<li>All features Taxonomised</li>
+				<li>Summary of features</li>
+				<li>Content type as list headers and children of type in list</li>
+				<li>List with what the user can  do for each type of interest</li>
+				<li>(Administrative, Inverstments, Social Info., Cultural)</li>
+			</ul>
+			<ul class="pull-left">
+				<li>Category Title</li>
+				<li>Child item lore ipsum</li>
+				<li>Child item Lore</li>
+				<li>Child item ipsum</li>
+				<li>Child item name</li>
+				<li>Child item</li>
+			</ul>
+			<ul class="pull-left">
+				<li>Category Title</li>
+				<li>Child item lore ipsum</li>
+				<li>Child item Lore</li>
+				<li>Child item ipsum</li>
+				<li>Child item name</li>
+				<li>Child item</li>
+			</ul>
+			<ul class="pull-left">
+				<li>Category Title</li>
+				<li>Child item lore ipsum</li>
+				<li>Child item Lore</li>
+				<li>Child item ipsum</li>
+				<li>Child item name</li>
+				<li>Child item</li>
+			</ul>
+		</footer>
 
 		<script type="text/javascript" src="js/lib/jquery-2.1.0.min.js"></script>
 		<script type="text/javascript" src="js/lib/d3.js"></script>

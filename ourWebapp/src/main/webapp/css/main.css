@@ -1,16 +1,83 @@
-body {
+header {
+	height: 30px;
+	background-color: #F4F4F4;	
+}
+
+section#body {
 	display: block;
 	margin: auto;
 	width: 1000px;
 }
 
-.chart {
-	margin-left: 40px;
-    margin-top: 50px;
+header label {
+    font-weight: normal;
+    margin-right: 5px;
+    margin-top: 4px;
+}
+    
+header .bubble-link {
+	display: block;
+	width: 30px;
+	height: 30px;
 }
 
-.chart:first-child {
-	margin-top: 110px;
+header .bubble-link ul {
+	position: absolute;
+	display: none;
+    right: 0;
+    top: 30px;
+    background-color: #999;
+    list-style: none;
+    padding: 7px 20px;
+    color: white;
+}
+
+header .bubble-link:hover {
+	background-color: #999;
+}
+
+header .bubble-link:hover ul {
+	display: block;
+}
+
+header .bubble-link:after {
+	content: " ";
+	width: 20px;
+	height: 20px;
+	background-color: green;
+	border-radius: 10px;
+	display: block;
+	margin: 4px;
+}
+
+footer {
+	background-color: black;
+	color: white;
+	padding: 20px;
+}
+
+footer ul {
+	list-style: none;
+	min-width: 400px;
+}
+
+footer ul li:first-child {
+	font-weight: bold;
+}
+
+/* Adjust chart colors */
+#bubble-map {
+	margin-top: -75px;
+}
+
+#subcase-time-chart {
+	margin-left: 20px;
+    margin-top: 20px;
+}
+
+#generic-time-chart {
+	margin-top: 40px;
+	margin-left: 20px;
 }
 
 #generic-time-chart g.stack._0  > rect.bar,
@@ -23,4 +90,10 @@ body {
 #generic-time-chart .dc-legend .dc-legend-item:last-child rect {
 	stroke: none;
     fill: #9ecae1;
+}
+
+a,
+a:hover {
+	text-decoration: none;
+	cursor: pointer;
 }
