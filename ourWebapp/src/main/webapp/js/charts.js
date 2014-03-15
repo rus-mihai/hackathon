@@ -1,6 +1,10 @@
 (function($) {
 	$(function() {
-		var numberFormat = d3.format(".2f");
+		var numberFormat = function ReplaceNumberWithCommas(yourNumber) {
+		    var n= yourNumber.toString().split(".");
+		    n[0] = n[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		    return n.join(".");
+		};
 
 	    var genericTimeChart = dc.barChart("#generic-time-chart");
 	    var subcaseTimeChart = dc.lineChart("#subcase-time-chart");
@@ -119,9 +123,8 @@
 				                })
 				                .title(function(d) {
 				                    return "Judet: " + d.key.substring(0, 1).toUpperCase() + d.key.substring(1)
-				                            + "\nSuma solicitata: " + numberFormat(d.value.totalRequested)
-				                            + "\nSuma authorizata: " + numberFormat(d.value.totalAuthorised)
-				                            + "\nSuma rambursata: " + numberFormat(d.value.totalReimbursement);
+				                            + "\nNumarul de proiecte: " + numberFormat(d.value.count)
+				                            + "\nSuma rambursata: " + numberFormat(d.value.totalReimbursement) + " RON";
 				                })
 				                .renderLabel(false)
 			                	.point("bihor", 132, 224)
