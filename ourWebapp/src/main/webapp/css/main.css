@@ -98,8 +98,8 @@ a:hover {
 	cursor: pointer;
 }
 
-#harta_cluj svg {
-	margin-left: 70px;
-	margin-top: 60px;
+#mapCluj svg {
+	margin-left: 60px;
+	margin-top: 40px;
 	offset: visible;
 }

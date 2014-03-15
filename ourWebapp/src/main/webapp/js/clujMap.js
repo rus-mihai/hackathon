@@ -1,6 +1,6 @@
-var R = Raphael("harta_cluj", 300, 300),
+var R = Raphael("mapCluj", 300, 300),
 	attr = {
-	    "id": 'harta_cluj',
+	    "id": 'mapCluj',
 	    "fill": "#E9E9E9",
 	    "stroke": "#ffffff",
 	    "stroke-width": 1,
@@ -35,16 +35,16 @@ for (var judet in ro) {
                 }
             )
             .click(function(){
-            	$("#harta_cluj").fadeOut('slow');
-        		$('#harta').fadeIn('slow');
+            	$("#mapCluj").fadeOut('slow');
+        		$('#bubble-map').fadeIn('slow');
         		$('.chart').show();
             });
         
         // unde punem numele prescurtate ale judetelor
         var w = st.getBBox().width,
             h = st.getBBox().height,
-            svg_l = $('#harta_cluj').offset().left, 
-            svg_t = $('#harta_cluj').offset().top, 
+            svg_l = $('#mapCluj').offset().left, 
+            svg_t = $('#mapCluj').offset().top, 
             off = $(st[0]).offset(), 
             ol = off.left, 
             ot = off.top, 
@@ -54,7 +54,7 @@ for (var judet in ro) {
             top =  sus + h / 2;
 
         // we don't live in a perfect world
-        if (judet == 'cj') top  = top  * 1.05
+        if (judet == 'cj') top  = top  * 1.05;
 
         ro[judet].judete = R
                             .attr({
