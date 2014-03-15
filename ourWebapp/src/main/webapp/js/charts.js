@@ -11,6 +11,11 @@
 	    var bubbleOverlayChart = dc.bubbleOverlay("#bubble-map")
 	            				   .svg(d3.select("#bubble-map svg"));
 
+	    $("div.reset").on("click", "a", function() {
+	    	dc.filterAll();
+	    	dc.redrawAll();
+	    });
+
 	    d3.csv("contracte-rambursari-new.csv", function(csv) {
 	        var data = crossfilter(csv),
 	        	MAX_COUNT = 0,

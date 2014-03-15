@@ -126,3 +126,8 @@ a:hover {
 	margin-top: 40px;
 	offset: visible;
 }
+
+.reset label {
+	margin-left: 21px;
+	margin-top: 26px;
+}
