@@ -4,8 +4,8 @@
 
 	    var genericTimeChart = dc.barChart("#generic-time-chart");
 	    var subcaseTimeChart = dc.lineChart("#subcase-time-chart");
-	    var bubbleOverlayChart = dc.bubbleOverlay("#ca-chart")
-	            				   .svg(d3.select("#ca-chart svg"));
+	    var bubbleOverlayChart = dc.bubbleOverlay("#harta")
+	            				   .svg(d3.select("#harta svg"));
 
         var data = crossfilter(window.jsonData);
 
