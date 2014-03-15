@@ -117,21 +117,24 @@ for (var judet in ro) {
                 }
             )
             .click(function(){
+            	if (judete[judet] === 'Cluj') {
+            		$("#harta, .chart").fadeOut('slow');
+            		$('#harta_cluj').fadeIn('slow');
+            		$('#harta_cluj').css('transform', 'scale(4)');
+            	}
                 var t = $(this[0]);
                 if (t.attr('sel')) return;
                 st.animate({fill:'#aad1f2'}, 100);
-                
+
                 $.each(ro, function(){
                     if (this != st) {
-                        this.animate({fill: "#F0F0F0"}, 100)
+                        this.animate({fill: "#F0F0F0"}, 100);
                     }
                 })
-                
+
                 t.attr('sel', true).parent().siblings().find('path').removeAttr('sel')
                 R.safari();
-                
-                arataInfo(judete[judet])
-                
+
             });
         
         // unde punem numele prescurtate ale judetelor

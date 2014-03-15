@@ -97,3 +97,9 @@ a:hover {
 	text-decoration: none;
 	cursor: pointer;
 }
+
+#harta_cluj svg {
+	margin-left: 70px;
+	margin-top: 60px;
+	offset: visible;
+}
