@@ -185,8 +185,9 @@ var color1 = '#ff6200', color2= '#4380d3';
 			if (playBackLoop === chart.series[0].data.length) {
 				clearInterval(playBackInterval);
 				$('a.play,a.stop').toggle();
+			} else {
+				chart.series[0].data[playBackLoop].events.click.call(chart.series[0].data[playBackLoop]);
 			}
-			chart.series[0].data[playBackLoop].events.click.call(chart.series[0].data[playBackLoop]);
 		},300);
 		
 		
