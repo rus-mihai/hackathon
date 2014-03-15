@@ -116,6 +116,12 @@
 	                		p.projects.push(v.COD_SMIS);
 	                		p.projectCount = p.projects.length;
 	                	}
+	                	if(v.VALOARE_AUTORIZATA) {
+		                	if (p.projectsAccepted.indexOf(v.COD_SMIS) < 0) {
+			                		p.projectsAccepted.push(v.COD_SMIS);
+			                		p.projectCountAccepted = p.projectsAccepted.length;
+		                	}
+	                	}
 	                	if (v.VALOARE_RAMBURSATA)
 	                		p.totalReimbursement += parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
 
@@ -125,6 +131,10 @@
 	                	var index = p.projects.indexOf(v.COD_SMIS);
 	                	p.projects.splice(index, 1);
 	                	p.projectCount = p.projects.length;
+	                	
+	                	var indexAcc = p.projectsAccepted.indexOf(v.COD_SMIS);
+	                	p.projectsAccepted.splice(index, 1);
+	                	p.projectCount = p.projectsAccepted.length;
 
 	                	if (v.VALOARE_RAMBURSATA)
 	                		p.totalReimbursement -= parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
@@ -134,8 +144,10 @@
 	                function() {
 	                    return {
 	                    	projects:[],
+	                    	projectsAccepted:[],
 	                    	totalReimbursement: 0,
-	                    	count: 0
+	                    	projectCount: 0,
+	                    	projectCountAccepted: 0
 	                    };
 	                }
 	        );
@@ -221,22 +233,22 @@
 				                .debug(false);
 	
 	        genericTimeChart.width(360)
-							.rangeChart(subcaseTimeChart	)
+								.rangeChart(subcaseTimeChart)
 			                .height(180)
 			                .margins({top: 40, right: 50, bottom: 30, left: 80})
 			                .dimension(yearDimension)
-			                .group(authorizationsByYear, "Numar proiecte")
+				            .group(authorizationsByYear, "Numar proiecte autorizate")
 			                .valueAccessor(function(d) {
-			                    return d.value.projectCount;
+				                    return d.value.projectCountAccepted;
 			                })
-//				                .stack(authorizationsByYear, "Sume solicitate", function(d) { return d.value.totalRequested; })
+				            .stack(authorizationsByYear, "Numar proiecte depuse", function(d) { return d.value.projectCount; })
 			                .x(d3.scale.linear().domain([2005, 2014]))
 			                .xUnits(function(){return 11;})
 			                .renderHorizontalGridLines(true)
 			                .centerBar(true)
 			                .elasticY(true)
 			                .brushOn(false)
-			                .legend(dc.legend().x(250).y(10))
+				            .legend(dc.legend().x(200).y(10))
 			                .title(function(d){
 			                    return d.key
 			                            + "\nSuma solicitata: " + Math.round(d.value.totalRequested)
