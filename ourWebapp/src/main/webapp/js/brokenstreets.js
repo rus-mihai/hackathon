@@ -156,7 +156,7 @@ var color1 = '#ff6200', color2= '#4380d3';
 	}
 	
 	
-	
+	var playBackLoop=0, playBackInterval=0;
 	
 	function showSummary(){
 		var i, names = {}, splits, j, total=0;
@@ -170,12 +170,35 @@ var color1 = '#ff6200', color2= '#4380d3';
 		for (i in names) {total++;}
 		$('#total').text(total);
 		$('#months').text(maxDate.getFullYear()*12+maxDate.getMonth()-minDate.getFullYear()*12-minDate.getMonth());
+		$('#summary a.play').click(function(){
+			
+			clearInterval(playBackInterval);
+			playBackLoop=60;
+			
+			playBackInterval = setInterval(function() {
+				playBackLoop++;
+				if (playBackLoop === chart.series[0].data.length) {
+					clearInterval(playBackInterval);
+				}
+				chart.series[0].data[playBackLoop].events.click.call(chart.series[0].data[playBackLoop]);
+			},300);
+			
+			
+			$('a.play,a.stop').toggle();
+			
+			return false;
+		});
+		$('#summary a.stop').click(function(){
+			clearInterval(playBackInterval);
+			$('a.play,a.stop').toggle();
+			return false;
+		});
 	}
 	
 	
 	
 	function drawChart() {
-		var chart = new Highcharts.Chart({
+		window.chart = new Highcharts.Chart({
 			title: '',
 	        chart: {
 	            renderTo: 'chart',
@@ -208,7 +231,7 @@ var color1 = '#ff6200', color2= '#4380d3';
 		 for (var i = 0; i < chart.series[0].data.length; i++) {
 			 if (chart.series[0].data[i].x === today) {
 				 lastUpdatedColumn= chart.series[0].data[i];
-				 lastUpdatedColumn.update({ color: color1, oldColor: color1 }, true, false);	 
+				 lastUpdatedColumn.update({ color: color1, oldColor: color1, borderColor: color1 }, true, false);	 
 			 }
 			 
          }
@@ -270,24 +293,25 @@ var color1 = '#ff6200', color2= '#4380d3';
 		for (i in dates) {
 			chartData.push({
 				color: color2,
+				borderColor: color2,
 				x: Number(i),
 				y: countDistinctStreets(dates[i]),
 				events: {
 					click: function(e){
 						if (lastUpdatedColumn) {
-							lastUpdatedColumn.update({ color: color2 }, true, false);
+							lastUpdatedColumn.update({ color: color2, borderColor: color2 }, true, false);
 						}
-                        this.update({ color: color1 }, true, false);
+                        this.update({ color: color1, borderColor: color1 }, true, false);
                         this.oldColor=color1;
                         lastUpdatedColumn = this;
 						drawStreets(new Date(this.x));
 					},
 					mouseOver: function(e) {
 						this.oldColor = this.color;
-						this.update({ color: color1 }, true, false);
+						this.update({ color: color1, borderColor: color1 }, true, false);
 					},
 					mouseOut: function(e){
-						this.update({ color: this.oldColor }, true, false);
+						this.update({ color: this.oldColor, borderColor: this.oldColor }, true, false);
 					}
 				}
 			});
