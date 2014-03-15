@@ -8,7 +8,11 @@
 	            				   .svg(d3.select("#harta svg"));
 
 	    d3.csv("contracte-rambursari-new.csv", function(csv) {
-	        var data = crossfilter(csv);
+	        var data = crossfilter(csv),
+	        	MAX_COUNT = 0,
+	        	MIN_COUNT = 0,
+	        	MAX_REIMBURSEMENT = 0,
+	        	MIN_REIMBURSEMENT = 0;
 	
 	        var locationDimension = data.dimension(function(d) {
 	            return d.JUDETUL_BENEFICIARULUI.toLowerCase();
@@ -23,29 +27,26 @@
                 	if (v.VALOARE_RAMBURSATA)
                 		p.totalReimbursement += parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
                 	p.count++;
-                    
-                	if (p.totalRequested)
-                		p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
-                	
+
+                	if (p.count > MAX_COUNT) {
+                		MAX_COUNT = p.count;
+                	} else if (MIN_COUNT == 0  || p.count < MIN_COUNT) {
+                		MIN_COUNT = p.count;
+                	}
+                	if (p.totalReimbursement > MAX_REIMBURSEMENT) {
+                		MAX_REIMBURSEMENT = p.totalReimbursement;
+                	} else if ( MIN_REIMBURSEMENT  == 0 || p.totalReimbursement < MIN_REIMBURSEMENT) {
+                		MIN_REIMBURSEMENT = p.totalReimbursement;
+                	}
+
                 	return p;
                 },
                 function(p, v) {
-                	if (v.VALOARE_ELIGIBILA_CERUTA)
-                		p.totalRequested -= parseInt(v.VALOARE_ELIGIBILA_CERUTA.replace(',', ''));
-                	if (v.VALOARE_AUTORIZATA)
-                		p.totalAuthorised -= parseInt(v.VALOARE_AUTORIZATA.replace(',', ''));
-                	if (v.VALOARE_RAMBURSATA)
-                		p.totalReimbursement -= parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
-                	p.count--;
-
-                	if (p.totalRequested)
-                		p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
-
-                	return p;
+                	throw "Operation not supported";
                 },
                 function() {
                     return {
-                        totalAuthorised:0, totalRequested:0, totalReimbursement:0, count:1000
+                        totalAuthorised:0, totalRequested:0, totalReimbursement:0, count:0
                     };
                 }
     		);
@@ -95,16 +96,32 @@
 				                .height(450)
 				                .dimension(locationDimension)
 				                .group(authorizationsByCity)
-				                .radiusValueAccessor(function(p) {
-				                	if (!p)
-				                		return 1;
-				                    return p.value.count + 100;
+				                .radiusValueAccessor(function(p) { // bubble radius
+				                	var radius = 0;
+				                	if (p.value.count > 0) {
+				                		radius = ((p.value.count - MIN_COUNT) / (MAX_COUNT - MIN_COUNT)) * 1000;
+				                	}
+				                	if (p.value.count == MAX_COUNT) {
+				                		radius = 1000;
+				                	}
+				                	radius = Math.max(0, radius);
+				                	radius = Math.min(radius, 1000);
+				                    return radius;
 				                })
-				                .r(d3.scale.linear().domain([0, 200000]))
+				                .r(d3.scale.linear().domain([0, 10000]))
 				                .colors(["#ff7373","#ff4040","#ff0000","#bf3030","#a60000"])
-				                .colorDomain([13, 30])
+				                .colorDomain([0, 100])
 				                .colorAccessor(function(p) {
-				                    return p.value.ratio;
+				                	var ratio = 0;
+				                	if (p.value.totalReimbursement > 0) {
+				                		ratio = Math.abs(Math.log(((p.value.totalReimbursement - MIN_REIMBURSEMENT) / (MAX_REIMBURSEMENT - MIN_REIMBURSEMENT)))) * 10;
+				                	}
+				                	if (p.value.totalReimbursement == MAX_REIMBURSEMENT) {
+				                		ratio = 100;
+				                	}
+				                	ratio = Math.max(0, ratio);
+				                	ratio = Math.min(ratio, 100);
+				                    return ratio;
 				                })
 				                .title(function(d) {
 				                    return "Judet: " + d.key
@@ -120,7 +137,7 @@
 								.point("bacau", 396, 261)
 								.point("vaslui", 453, 256)
 								.point("galati", 454, 310)
-								.point("vrancea", 309, 310)
+								.point("vrancea", 409, 308)
 								.point("buzau", 394, 348)
 								.point("braila", 454, 364)
 								.point("constanta", 494, 426)
