@@ -62,3 +62,9 @@ PUT  /_river/eventsRiver/_meta
 			}
 		}
 	}
+	
+2. Remove the river
+DELETE /_river/eventsRiver
+
+3. Remove the index
+DELETE /events
