@@ -99,6 +99,12 @@ footer ul li:first-child {
 }
 
 /* Adjust chart colors */
+#charts .wrapper {
+	width: 600px;
+	height: 600px;
+	overflow: hidden;
+}
+
 #bubble-map {
 	margin-top: -75px;
 }

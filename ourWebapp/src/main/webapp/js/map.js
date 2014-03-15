@@ -118,9 +118,9 @@ for (var judet in ro) {
             )
             .click(function(){
             	if (judete[judet] === 'Cluj') {
-            		$("#bubble-map, .chart, .reset").fadeOut('slow');
-            		$('#mapCluj').fadeIn('slow');
-            		$('#mapCluj').css('transform', 'scale(4)');
+            		$("#bubble-map").fadeOut('slow');
+            		$('#mapCluj').fadeIn('slow')
+            					 .css('transform', 'scale(4)');
             	}
                 var t = $(this[0]);
                 if (t.attr('sel')) return;

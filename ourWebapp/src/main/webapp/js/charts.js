@@ -16,6 +16,32 @@
 	    	dc.redrawAll();
 	    });
 
+	    $.ajax({
+			type: "POST",
+			url: 'http://192.168.0.100:9200/excel_river/doc/_search',
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			data: {
+				"size": 0, 
+			    "aggregations": {
+			        "aplications_per_county": {
+			            "terms": { "field": "JUDETUL_BENEFICIARULUI" }
+			        }
+			    }
+			},
+			success: function() {}
+		});
+//		$.post('http://192.168.0.100:9200/excel_river/doc/_search', {
+//			"size": 0, 
+//		    "aggregations": {
+//		        "aplications_per_county": {
+//		            "terms": { "field": "JUDETUL_BENEFICIARULUI" }
+//		        }
+//		    }
+//		}, function(response) {
+//			console.log(response);
+//		});
+
 	    d3.csv("contracte-rambursari-new.csv", function(csv) {
 	        var data = crossfilter(csv),
 	        	MAX_COUNT = 0,
@@ -194,46 +220,46 @@
 								.point("salaj", 182, 204)
 				                .debug(false);
 	
-		        genericTimeChart.width(360)
-								.rangeChart(subcaseTimeChart	)
-				                .height(180)
-				                .margins({top: 40, right: 50, bottom: 30, left: 80})
-				                .dimension(yearDimension)
-				                .group(authorizationsByYear, "Numar proiecte")
-				                .valueAccessor(function(d) {
-				                    return d.value.projectCount;
-				                })
+	        genericTimeChart.width(360)
+							.rangeChart(subcaseTimeChart	)
+			                .height(180)
+			                .margins({top: 40, right: 50, bottom: 30, left: 80})
+			                .dimension(yearDimension)
+			                .group(authorizationsByYear, "Numar proiecte")
+			                .valueAccessor(function(d) {
+			                    return d.value.projectCount;
+			                })
 //				                .stack(authorizationsByYear, "Sume solicitate", function(d) { return d.value.totalRequested; })
-				                .x(d3.scale.linear().domain([2005, 2014]))
-				                .xUnits(function(){return 11;})
-				                .renderHorizontalGridLines(true)
-				                .centerBar(true)
-				                .elasticY(true)
-				                .brushOn(false)
-				                .legend(dc.legend().x(250).y(10))
-				                .title(function(d){
-				                    return d.key
-				                            + "\nSuma solicitata: " + Math.round(d.value.totalRequested)
-				                            + "\nSuma rambursata: " + Math.round(d.value.totalReimbursement);
-				                })
-				                .xAxis().ticks(5).tickFormat(d3.format("d"));
+			                .x(d3.scale.linear().domain([2005, 2014]))
+			                .xUnits(function(){return 11;})
+			                .renderHorizontalGridLines(true)
+			                .centerBar(true)
+			                .elasticY(true)
+			                .brushOn(false)
+			                .legend(dc.legend().x(250).y(10))
+			                .title(function(d){
+			                    return d.key
+			                            + "\nSuma solicitata: " + Math.round(d.value.totalRequested)
+			                            + "\nSuma rambursata: " + Math.round(d.value.totalReimbursement);
+			                })
+			                .xAxis().ticks(5).tickFormat(d3.format("d"));
 
-		        subcaseTimeChart.width(360)
-				                .height(150)
-				                .margins({top: 10, right: 50, bottom: 30, left: 80})
-				                .dimension(yearDimension)
-				                .group(authorizationsByYear, 'Suma investitii')
-				                .valueAccessor(function(d) {
-				                    return d.value.totalReimbursement;
-				                })
-				                .x(d3.scale.linear().domain([1997, 2012]))
-				                .renderHorizontalGridLines(true)
-				                .elasticY(true)
-				                .brushOn(true)
-				                .title(function(d){
-				                    return d.key + "\nSumata totala de investitii: " + Math.round(d.value.totalReimbursement);
-				                })
-				                .xAxis().ticks(5).tickFormat(d3.format("d"));
+	        subcaseTimeChart.width(360)
+			                .height(150)
+			                .margins({top: 10, right: 50, bottom: 30, left: 80})
+			                .dimension(yearDimension)
+			                .group(authorizationsByYear, 'Suma investitii')
+			                .valueAccessor(function(d) {
+			                    return d.value.totalReimbursement;
+			                })
+			                .x(d3.scale.linear().domain([1997, 2012]))
+			                .renderHorizontalGridLines(true)
+			                .elasticY(true)
+			                .brushOn(true)
+			                .title(function(d){
+			                    return d.key + "\nSumata totala de investitii: " + Math.round(d.value.totalReimbursement);
+			                })
+			                .xAxis().ticks(5).tickFormat(d3.format("d"));
 	
 	        dc.renderAll();
         });
