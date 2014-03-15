@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Leaflet Quick Start Guide Example</title>
+	<title>Cluj - Broken Streets</title>
 	<meta charset="utf-8" />
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,10 +26,11 @@
 			box-shadow:         0px 1px 4px 0px rgba(50, 50, 50, 0.75);
 		}
 		#footer {
+			display: table;
 			box-sizing: border-box;
 			position:relative;
 			width: 100%;
-			height: 10%;
+			height: 15%;
 			z-index: 2;
 			-webkit-box-shadow: 0px -1px 4px 0px rgba(50, 50, 50, 0.75);
 			-moz-box-shadow:    0px -1px 4px 0px rgba(50, 50, 50, 0.75);
@@ -47,17 +48,62 @@
 			width: 300px;
 			margin: 0 auto;
 		}
+		#summary {
+			display:table-cell;
+			vertical-align: middle;
+			text-align: center;
+			box-sizing: border-box;
+			font-size: 12pt;
+			line-height: 14pt;
+			font-family: Verdana, Arial;
+			text-transform: uppercase;
+			width: 200px;
+			height: 100%;
+		}
+		#chart {
+			height: 100%;
+		}
+		
+		#summary h3 {
+			margin: 0;
+			color: #ff6200;
+			font-size: 32pt;
+			line-height: 28pt;
+			padding: 4px 0;
+			font-family: 'ostrich', verdana, arial;
+		}
+		
+		#months {
+			font-size: 16pt;
+		}
+		
+		#summary a {
+			margin-top: 4px;
+			display: inline-block;
+		}
 	</style>
 </head>
 <body>
 	<div id="header">
 		<h1>Cluj - Broken Streets</h1>
 	</div>
-	<div id="map" style="width: 100%; height: 80%;"></div>
-	<div id="footer"></div>
+	<div id="map" style="width: 100%; height: 75%;"></div>
+	<div id="footer">
+		<div id="summary">
+			<h3 id="total">0</h3>
+			broken streets<br>
+			in <span id="months">0</span> months<br>
+			<a href="#">Play All</a>
+		</div>
+		<div id="chart"></div>
+	</div>
 
 	<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
-	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script src="js/lib/jquery-2.1.0.min.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="js/lib/d3.js"></script>
+	<script src="js/lib/dc.js"></script>
+	<script src="js/lib/date.js"></script>
 	<script src="js/lib/kizzy.js"></script>
 	<script src="js/openstreetmap.js"></script>
 </body>

@@ -89,21 +89,7 @@ var map = new L.Map('map');
 	}
 	
 	
-	function drawStreet(name) {
-		
-		//first check for street intersections
-		if (name.indexOf('#') !== -1) {
-			drawStreet(name.split('#')[0]);
-			drawStreet(name.split('#')[1]);
-			return;
-		}
-		if (name.indexOf(' colt ') !== -1) {
-			drawStreet(name.split(' colt ')[0]);
-			drawStreet(name.split(' colt ')[1]);
-			return;
-		}
-		
-		//cleanup the name
+	function cleanName(name) {
 		var original = name;
 		name = name.toLowerCase();//lowercase
 		name = name.replace(/\(.*\)/, '');//remove text between parenthesis
@@ -115,8 +101,30 @@ var map = new L.Map('map');
 		name = name.replace(/\s(numere|de la).*$/, ' ').trim();//remove special keywords
 		name = name.replace(/\s+/, ' ').trim();//remove extra white spaces
 		
-		console.log('Cleaned name [' + name + '] from [' + original + ']');
-		_drawStreet(name);
+		//console.log('Cleaned name [' + name + '] from [' + original + ']');
+		return name;
+	}
+	
+	function splitNames(name) {
+		if (name.indexOf('#') !== -1) {
+			return name.split('#');
+		}
+		if (name.indexOf(' colt ') !== -1) {
+			return name.split(' colt ');
+		}
+		return [name];
+	}
+	
+	function drawStreet(name) {
+		
+		//first check for street intersections
+		var splits = splitNames(name), i;
+		
+		for (i=0;i<splits.length;i++) {
+			_drawStreet(cleanName(splits[i]));
+		}
+		
+		
 	}
 	
 	//TODO: user real data from elastic search
@@ -127,4 +135,193 @@ var map = new L.Map('map');
 	for (i=0;i<locations.length;i++) {
 		drawStreet(locations[i].loc1_sparg);
 	}
+	
+	var hits = [];
+	function loadDataFromElasticSearch(){
+		
+		
+
+		$.getJSON('http://54.72.105.17:8080/spargeri/csv_type/_search', {
+			size: 1000,
+			"query" : {
+				"match_all" : {}
+			}
+		}, function(data) {
+			hits = data.hits.hits;
+			prepareData();
+			drawChart();
+			console.log(hits);
+			showSummary();
+		});
+		
+		
+		
+	}
+	
+	
+	function showSummary(){
+		var i, names = {}, splits, j, total=0;
+		
+		for (i=0;i<hits.length;i++) {
+			splits= splitNames(hits[i]._source.loc1_sparg);
+			for (j=0;j<splits.length;j++) {
+				names[cleanName(splits[j])] = true;
+			}
+		}
+		for (i in names) {total++;}
+		$('#total').text(total);
+		$('#months').text(maxDate.getFullYear()*12+maxDate.getMonth()-minDate.getFullYear()*12-minDate.getMonth());
+	}
+	
+	
+	
+	function drawChart() {
+		var chart = new Highcharts.Chart({
+			title: '',
+	        chart: {
+	            renderTo: 'chart',
+	            type: 'column'
+	        },
+
+	        xAxis: {
+	            type: 'datetime'
+	        },
+	        yAxis: {
+	        	title: {
+	        		text: null
+	        	}
+	        },
+	        series: [{ name: 'Broken Streets' ,data: chartData}],
+	        legend: {
+	        	enabled: false
+	        }
+
+	    });
+		
+		
+		
+//		var footerChart = dc.lineChart("#footer");
+//		
+//		footerChart.width(500)
+//	    .height(30)
+//	    .selectAll('rect')
+//	    .data(chartData)
+//	    .x(d3.time.scale().domain([minDate, maxDate]))
+//	    .round(d3.time.month.round)
+//	    .xUnits(d3.time.months)
+//	    .elasticY(true);
+	}
+	
+	var minDate = new Date().addMonths(-1), maxDate = new Date().addMonths(1), dates = {}, chartData = [];
+	
+	function prepareData(){
+		var i, data;
+		for (i=0;i<hits.length;i++) {
+			data = hits[i]._source;
+			data.perioada1_exec = parseDateRange(data.perioada1_exec);
+			data.perioada1_refac = parseDateRange(data.perioada1_refac);
+			
+			calcMinDate(data.perioada1_exec.from, data.perioada1_exec.to, data.perioada1_refac.from, data.perioada1_refac.to);
+			calcMaxDate(data.perioada1_exec.from, data.perioada1_exec.to, data.perioada1_refac.from, data.perioada1_refac.to);
+			
+			groupByDate(data);
+			
+			
+			
+		}
+		aggregateData();
+		console.log(minDate,maxDate);
+	}
+	
+	
+	function aggregateData(){
+		var i;
+		for (i in dates) {
+			chartData.push({
+				x: Number(i),
+				y: dates[i].length
+			});
+		}
+		chartData.sort(function (a,b) {
+			return a.x - b.x;
+		});
+	}
+	
+	function groupByDate(data) {
+		var start = data.perioada1_exec.from, end = data.perioada1_refac.to.getTime();
+		
+		while (start.getTime() <= end) {
+			if (!dates[start.getTime()]) {
+				dates[start.getTime()] = [];
+			}
+			dates[start.getTime()].push(data);
+			start = start.addDays(1);
+		}
+	}
+	
+	function calcMinDate(){
+		var i;
+		for (i=0;i<arguments.length;i++) {
+			if (arguments[i].getTime() < minDate.getTime()) {
+				minDate = arguments[i];
+			}
+		}
+	}
+	
+	function calcMaxDate(){
+		var i;
+		for (i=0;i<arguments.length;i++) {
+			if (arguments[i].getTime() > maxDate.getTime()) {
+				maxDate = arguments[i];
+			}
+		}
+	}
+	
+	
+	function parseDateRange(str) {
+		var range = {}, pieces;
+		str = str.replace(/\s+/g,'').split('-');
+		pieces = str[0].split('.');
+		if (str.length == 1) {
+			str[1] = str[0];
+		}
+		range.to = parseDate(str[1]);
+		if (pieces.length === 0) {
+			str[0] = String(range.to.getDate());
+		}
+		if (pieces.length <= 1) {
+			str[0] += '.' + (range.to.getMonth()+1);
+		}
+		if (pieces.length <= 2) {
+			str[0] += '.' + (range.to.getFullYear());
+		}
+		
+		range.from = parseDate(str[0]);
+		
+		return range;
+	}
+	
+	function parseDate(str) {
+		if (!str) {
+			return new Date();
+		}
+		str = str.split('.');
+		if (str[0].length==1) {
+			str[0] = '0' + str[0]; 
+		}
+		if (str[1].length==1) {
+			str[1] = '0' + str[1]; 
+		}
+		if (str[2] === '20') {
+			str[2] = '2014';
+		}
+		if (str[2].length==2) {
+			str[2] = '20' + str[2]; 
+		}
+		return Date.parseExact(str.join('.'), 'dd.MM.yyyy') || new Date();
+	}
+	
+	loadDataFromElasticSearch();
+	
+	
 	
