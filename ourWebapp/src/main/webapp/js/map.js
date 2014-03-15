@@ -2,7 +2,7 @@ var wikiURL = 'http://ro.wikipedia.org/wiki/Judetul_',
 	R = Raphael("harta", 600, 600),
 	attr = {
 	    "id": 'harta',
-	    "fill": "#e0e7f1",
+	    "fill": "#E9E9E9",
 	    "stroke": "#ffffff",
 	    "stroke-width": 1,
 	    "stroke-linejoin": "round"
@@ -112,7 +112,7 @@ for (var judet in ro) {
                     $(judet).css('display','block');
                 },
                 function(){
-                    if ( !$(this[0]).attr('sel') ) st.animate({fill: "#e0e7f1"}, 200);
+                    if ( !$(this[0]).attr('sel') ) st.animate({fill: "#E9E9E9"}, 200);
                     R.safari();
                 }
             )
@@ -123,7 +123,7 @@ for (var judet in ro) {
                 
                 $.each(ro, function(){
                     if (this != st) {
-                        this.animate({fill: "#e0e7f1"}, 100)
+                        this.animate({fill: "#E9E9E9"}, 100)
                     }
                 })
                 
@@ -161,9 +161,4 @@ for (var judet in ro) {
                             });
 
     })(ro[judet], judet);
-}
-
-function arataInfo(judet){
-    $('iframe').remove()
-    $('<iframe src="' + wikiURL + judet + '"/>').appendTo('#info')
 }

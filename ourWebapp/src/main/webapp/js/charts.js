@@ -58,36 +58,30 @@
 
 	        var authorizationsByYear = yearDimension.group().reduce(
 	                function(p, v) {
-	                	if (v.VALOARE_ELIGIBILA_CERUTA)
-	                		p.totalRequested += parseInt(v.VALOARE_ELIGIBILA_CERUTA.replace(',', ''));
-                		if (v.VALOARE_AUTORIZATA)
-                			p.totalAuthorised += parseInt(v.VALOARE_AUTORIZATA.replace(',', ''));
-            			if (v.VALOARE_RAMBURSATA)
-            				p.totalReimbursement += parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
-	                	p.count++;
-	                    
-	                	if (p.totalRequested)
-	                		p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
+	                	if (p.projects.indexOf(v.COD_SMIS) < 0) {
+	                		p.projects.push(v.COD_SMIS);
+	                		p.projectCount = p.projects.length;
+	                	}
+	                	if (v.VALOARE_RAMBURSATA)
+	                		p.totalReimbursement += parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
 
 	                	return p;
 	                },
 	                function(p, v) {
-	                	if (v.VALOARE_ELIGIBILA_CERUTA)
-	                		p.totalRequested -= parseInt(v.VALOARE_ELIGIBILA_CERUTA.replace(',', ''));
-	                	if (v.VALOARE_ELIGIBILA_CERUTA)
-	                		p.totalAuthorised -= parseInt(v.VALOARE_AUTORIZATA.replace(',', ''));
+	                	var index = p.projects.indexOf(v.COD_SMIS);
+	                	p.projects.splice(index, 1);
+	                	p.projectCount = p.projects.length;
+
 	                	if (v.VALOARE_RAMBURSATA)
 	                		p.totalReimbursement -= parseInt(v.VALOARE_RAMBURSATA.replace(',', ''));
-	                	p.count--;
-
-	                	if (p.totalRequested)
-	                		p.ratio = (p.totalReimbursement / p.totalRequested) * 100;
-
+	                	
 	                	return p;
 	                },
 	                function() {
 	                    return {
-	                        totalAuthorised:0, totalRequested:0, totalReimbursement:0, count:0
+	                    	projects:[],
+	                    	totalReimbursement: 0,
+	                    	count: 0
 	                    };
 	                }
 	        );
@@ -124,11 +118,12 @@
 				                    return ratio;
 				                })
 				                .title(function(d) {
-				                    return "Judet: " + d.key
+				                    return "Judet: " + d.key.substring(0, 1).toUpperCase() + d.key.substring(1)
 				                            + "\nSuma solicitata: " + numberFormat(d.value.totalRequested)
 				                            + "\nSuma authorizata: " + numberFormat(d.value.totalAuthorised)
 				                            + "\nSuma rambursata: " + numberFormat(d.value.totalReimbursement);
 				                })
+				                .renderLabel(false)
 			                	.point("bihor", 132, 224)
 				                .point("suceava", 337, 178)
 								.point("botosani", 396, 148)
@@ -174,14 +169,15 @@
 	
 		        genericTimeChart.width(360)
 				                .height(180)
-				                .margins({top: 40, right: 50, bottom: 30, left: 60})
+				                .margins({top: 40, right: 50, bottom: 30, left: 80})
 				                .dimension(yearDimension)
-				                .group(authorizationsByYear, "Sume autorizate")
+				                .group(authorizationsByYear, "Numar proiecte")
 				                .valueAccessor(function(d) {
-				                    return d.value.totalReimbursement;
+				                    return d.value.projectCount;
 				                })
-				                .stack(authorizationsByYear, "Sume solicitate", function(d) {return d.value.totalRequested;})
-				                .x(d3.scale.linear().domain([1997, 2012]))
+//				                .stack(authorizationsByYear, "Sume solicitate", function(d) { return d.value.totalRequested; })
+				                .x(d3.scale.linear().domain([2005, 2014]))
+				                .xUnits(function(){return 11;})
 				                .renderHorizontalGridLines(true)
 				                .centerBar(true)
 				                .elasticY(true)
@@ -193,22 +189,21 @@
 				                            + "\nSuma rambursata: " + Math.round(d.value.totalReimbursement);
 				                })
 				                .xAxis().ticks(5).tickFormat(d3.format("d"));
-	
+
 		        subcaseTimeChart.width(360)
 				                .height(150)
-				                .margins({top: 10, right: 50, bottom: 30, left: 60})
+				                .margins({top: 10, right: 50, bottom: 30, left: 80})
 				                .dimension(yearDimension)
-				                .group(authorizationsByYear)
+				                .group(authorizationsByYear, 'Suma investitii')
 				                .valueAccessor(function(d) {
-				                    return d.value.count;
+				                    return d.value.totalReimbursement;
 				                })
 				                .x(d3.scale.linear().domain([1997, 2012]))
 				                .renderHorizontalGridLines(true)
 				                .elasticY(true)
 				                .brushOn(true)
 				                .title(function(d){
-				                    return d.key
-				                            + "\nNumarul total de investitii la nivel de tara: " + Math.round(d.value.count);
+				                    return d.key + "\nSumata totala de investitii: " + Math.round(d.value.totalReimbursement);
 				                })
 				                .xAxis().ticks(5).tickFormat(d3.format("d"));
 	
