@@ -1,0 +1,130 @@
+
+
+.viewMore{
+	font-size: 12px;
+	text-decoration: none;
+}
+
+
+
+.root:hover{
+  stroke: #bababa;
+}
+
+circle.node {
+  cursor: pointer;
+  stroke: #FFF;
+  stroke-width: 0.5px;
+  opacity : 1;
+}
+
+.root {
+  cursor: pointer;
+  stroke: #FFF;
+  stroke-width: 0.5px;
+}
+
+.link {
+  fill: none;
+  stroke: #dcdcdc;
+  stroke-width: 1px;
+}
+
+.myhidden{
+	display : none;
+}
+
+.descDot{
+	height : 70px;
+	width : 240px;
+	position: absolute;
+	font-size : 0.8em;
+}
+.descDot div{
+	color : #444;
+}
+.descDot h4{
+	margin-bottom: 2px;
+}
+.descDot.one{
+    margin-left: 205px;
+    margin-top: 335px;
+}
+.descDot.two{
+    margin-left: 200px;
+    margin-top: 95px;
+}
+.descDot.three{
+   margin-left: 384px;
+    margin-top: -50px;
+}
+.descDot.four{
+    margin-left: 816px;
+    margin-top: 13px;
+}
+.descDot.five{
+   margin-left: 780px;
+    margin-top: 253px;
+}
+
+.one,.two,.three,.four,.five{
+	opacity : 0.5;
+}
+
+.one:hover,.two:hover,.three:hover,.four:hover,.five:hover{
+	opacity : 1;
+}
+
+.one a{
+	color : #E991FF;
+}
+.two a{
+	color : #72A3FF;
+}
+.three a{
+	color : #FF946B;
+}
+.four a{
+	color : #FFF321;
+}
+.five a{
+	color : #FF5EC0
+}
+
+.svg{
+   float: left;
+    margin-left: -70px;
+	margin-top : 50px;
+	position : relative;
+}
+
+.op{
+	opacity : 1;
+}
+
+.categories{
+	z-index : 5;
+	margin-top : 150px;
+	float: left;
+	position : relative;
+}
+
+.category{
+background: none repeat scroll 0 0 rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: 10px;
+    cursor: pointer;
+    height: 60px;
+    line-height: 1;
+    margin-bottom: 10px;
+    padding: 10px 5px;
+    text-align: center;
+    vertical-align: middle;
+    width: 110px;
+	font-size: 0.9em;
+	color: rgba(0, 0, 0, 0.4);
+}
+
+.category:hover{
+	background:rgba(0, 0, 0, 0.05);
+}

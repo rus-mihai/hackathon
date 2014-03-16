@@ -18,7 +18,7 @@
 
 	    $.ajax({
 			type: "POST",
-			url: 'http://192.168.0.100:9200/excel_river/doc/_search',
+			url: 'http://192.168.0.110:9200/excel_river/doc/_search',
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			data: {
