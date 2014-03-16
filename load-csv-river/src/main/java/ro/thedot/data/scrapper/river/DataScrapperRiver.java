@@ -439,10 +439,18 @@ public class DataScrapperRiver extends AbstractRiverComponent implements River {
             if (createKeyMap.keySet().contains(cell.getColumnIndex())) {
               switch (cell.getCellType()) {
               case Cell.CELL_TYPE_NUMERIC:
-                object.put(createKeyMap.get(cell.getColumnIndex()), cell.getNumericCellValue());
+                try {
+                  object.put(createKeyMap.get(cell.getColumnIndex()), cell.getNumericCellValue());
+                } catch (final Exception e) {
+                  // TODO: handle exception
+                }
                 break;
               case Cell.CELL_TYPE_STRING:
-                object.put(createKeyMap.get(cell.getColumnIndex()), cell.getStringCellValue());
+                try {
+                  object.put(createKeyMap.get(cell.getColumnIndex()), cell.getStringCellValue());
+                } catch (final Exception e) {
+                  // TODO: handle exception
+                }
                 break;
               }
             }
