@@ -35,7 +35,7 @@ for (var judet in ro) {
                 }
             )
             .click(function(){
-            	$("#mapCluj").fadeOut('slow');
+            	$("#mapCluj, #mapClujOverlay").fadeOut('slow');
         		$('#bubble-map').fadeIn('slow');
             });
         

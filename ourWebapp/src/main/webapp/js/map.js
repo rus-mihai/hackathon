@@ -121,6 +121,7 @@ for (var judet in ro) {
             		$("#bubble-map").fadeOut('slow');
             		$('#mapCluj').fadeIn('slow')
             					 .css('transform', 'scale(4)');
+            		$('#mapClujOverlay').fadeIn('slow');
             	}
                 var t = $(this[0]);
                 if (t.attr('sel')) return;
