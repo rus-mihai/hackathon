@@ -1,0 +1,139 @@
+—— Create river with name excel_river (same index name will be created) (specify which columns are needed from the header to be indexed —— 
+PUT /_river/excel_river/_meta
+{
+  "type": "scrapper",
+  "lx": {
+    "url": "c:/hackathon/xls/",
+    "update_rate": 1000000,
+    "includes": "*.xls",
+    "excludes": "resume",
+    "fields": [
+        "CHEIE",
+        "TITLU_PROIECT",
+        "VALOARE_ELIGIBILA_CERUTA",
+        "VALOARE_AUTORIZATA",
+        "DATA_AUTORIZATA",
+        "JUDETUL_BENEFICIARULUI",
+        "LOCALITATEA_BENEFICIARULUI",
+        "VALOARE_RAMBURSATA"]
+  }
+}
+
+——
+Search example
+GET /excel_river/doc/_search
+{
+    "query": {
+         "query_string": {
+            "query": "CLUJ",
+            "fields": ["JUDETUL_BENEFICIARULUI"]
+        }
+    }
+}
+DELETE /_river/excel_river
+DELETE /excel_river
+
+GET /excel_river/doc/_mapping
+
+——Edit Mapping
+
+PUT /excel_river/doc/_mapping
+{
+   "doc": {
+      "properties": {
+         "LOCALITATEA_BENEFICIARULUI": {
+            "type": "multi_field",
+            "fields": {
+                "LOCALITATEA_BENEFICIARULUI": {"type": "string"},
+                "original": {"type" : "string", "index" : "not_analyzed"}
+            }
+        },
+        "JUDETUL_BENEFICIARULUI": {
+            "type": "string",
+            "index": "not_analyzed"
+        }
+        
+      }
+   }
+}
+
+
+————Aggregation example
+POST /excel_river/doc/_search
+{
+"size": 0, 
+    "aggregations": {
+        "aplications_per_county": {
+            "terms": { "field": "JUDETUL_BENEFICIARULUI","size":100 , "order": {
+               "suma_autorizata": "desc"
+            }},
+             "aggregations": {
+                "suma_autorizata": {
+                   "sum": {
+                      "field": "VALOARE_AUTORIZATA"
+                   }
+                },
+                "suma_rambursata": {
+                   "sum": {
+                      "field": "VALOARE_RAMBURSATA"
+                   }
+                },
+                "year": {
+                    "terms": { "field": "DATA_AUTORIZATA","size":100},
+                    "aggregations": {
+                        "suma_rambursata": {
+                           "sum": {
+                              "field": "VALOARE_RAMBURSATA"
+                           }
+                        },
+                         "suma_autorizata": {
+                           "sum": {
+                              "field": "VALOARE_AUTORIZATA"
+                        }
+                }
+                        
+                }
+                }
+        }
+    }
+}}
+
+POST /excel_river/doc/_search?q=JUDETUL_BENEFICIARULUI:CLUJ
+{
+"size": 0, 
+        "aggregations": {  
+            "app_per_town":{
+            "terms": { "field": "LOCALITATEA_BENEFICIARULUI.original","size":100 , "order": {
+               "suma_autorizata": "desc"
+            }},
+             "aggregations": {
+                "suma_autorizata": {
+                   "sum": {
+                      "field": "VALOARE_AUTORIZATA"
+                   }
+                },
+                 "suma_rambursata": {
+                   "sum": {
+                      "field": "VALOARE_RAMBURSATA"
+                   }
+                },
+                "year": {
+                    "terms": { "field": "DATA_AUTORIZATA","size":100},
+                    "aggregations": {
+                        "suma_rambursata": {
+                           "sum": {
+                              "field": "VALOARE_RAMBURSATA"
+                           }
+                        },
+                         "suma_autorizata": {
+                   "sum": {
+                      "field": "VALOARE_AUTORIZATA"
+                   }
+                }
+                        
+                }
+                }
+             }
+            }}
+        }
+

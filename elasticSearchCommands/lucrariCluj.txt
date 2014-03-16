@@ -1,0 +1,46 @@
+
+1.1 Create the index and Import from the file
+
+PUT /_river/my_csv_river/_meta
+{
+    "type" : "csv",
+    "csv_file" : {
+        "folder" : "c:/hackathon/csv/",
+        "filename_pattern" : "aspas.csv",
+        "poll":"5m",
+        "fields" : [
+            "nr_aspas",
+            "fel_lucrare",
+            "loc1_sparg",
+            "lat1",
+            "long1",
+            "mp1_carosabil",
+            "mp1_trotuar",
+            "mp1_zonaverde",
+            "perioada1_exec",
+            "perioada1_refac"
+        ],
+        "first_line_is_header" : "true",
+        "field_separator" : "\t",
+        "escape_character" : ";",
+        "quote_character" : "'",
+        "field_id" : "id"
+    },
+    "index" : {
+        "index" : "spargeri",
+        "type" : "csv_type",
+        "bulk_size" : 100,
+        "bulk_threshold" : 10
+    }
+}
+
+1.2 Search by date
+	GET /spargeri/csv_type/_search
+{
+    "query": {
+         "query_string": {
+            "query": "14",
+            "fields": ["perioada1_exec"]
+        }
+    }
+}
