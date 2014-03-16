@@ -86,8 +86,6 @@
 		        
 		        var authorizationsByCity = locationDimension.group().reduce(
 		        	function(p, v) {
-	                	if (v.suma_autorizata)
-	                		p.totalAuthorised += v.suma_autorizata;
 	                	if (v.suma_rambursata)
 	                		p.totalReimbursement += v.suma_rambursata;
 	                	p.count += v.doc_count;
@@ -141,6 +139,8 @@
 		                	p.count += v.doc_count;
 		                	if (v.suma_rambursata)
 		                		p.totalReimbursement += v.suma_rambursata;
+		                	if (v.suma_autorizata)
+		                		p.totalAuthorized += v.suma_autorizata;
 	
 		                	return p;
 		                },
@@ -148,12 +148,16 @@
 		                	p.count -= v.doc_count;
 		                	if (v.suma_rambursata)
 		                		p.totalReimbursement -= v.suma_rambursata;
+		                	
+		                	if (v.suma_autorizata)
+		                		p.totalAuthorized -= v.suma_autorizata;
 
 		                	return p;
 		                },
 		                function() {
 		                    return {
 		                    	totalReimbursement: 0,
+		                    	totalAuthorized:0,
 		                    	count: 0,
 		                    	projectCountAccepted: 0
 		                    };
@@ -314,14 +318,17 @@
 				                .dimension(yearDimension)
 				                .group(authorizationsByYear, 'Suma investitii')
 				                .valueAccessor(function(d) {
-				                    return d.value.totalReimbursement;
+				                    return d.value.totalAuthorized;
 				                })
 				                .x(d3.scale.linear().domain([2008, 2014]))
 				                .renderHorizontalGridLines(true)
+				                .stack(authorizationsByYear, "Sumata totala rambursata", function (d) {
+				                	return d.value.totalReimbursement;
+								}) 
 				                .elasticY(true)
 				                .brushOn(true)
 				                .title(function(d){
-				                    return d.key + "\nSumata totala de investitii: " + Math.round(d.value.totalReimbursement);
+				                    return d.key + "\nSumata totala autorizata: " + Math.round(d.value.totalAuthorized);
 				                })
 				                .xAxis().ticks(5).tickFormat(d3.format("d"));
 		
