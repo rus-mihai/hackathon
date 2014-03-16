@@ -29,6 +29,16 @@ header .page-title {
     text-transform: uppercase;
 }
 
+header .back {
+	float: left;
+    margin-left: 10px;
+    margin-top: 6px;
+    color: #999;
+    font-size: 14px;
+    font-style: italic;
+    font-weight: bold;
+}
+
 header .bubble-link {
 	display: block;
 	width: 30px;
