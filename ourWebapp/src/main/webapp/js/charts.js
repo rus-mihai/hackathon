@@ -10,6 +10,8 @@
 	    var subcaseTimeChart = dc.lineChart("#subcase-time-chart");
 	    var bubbleOverlayChart = dc.bubbleOverlay("#bubble-map")
 	            				   .svg(d3.select("#bubble-map svg"));
+	    var bubbleOverlayChart1 = dc.bubbleOverlay("#mapClujOverlay")
+	    							.svg(d3.select("#mapClujOverlay svg"));
 
 	    $("div.reset").on("click", "a", function() {
 	    	dc.filterAll();
@@ -242,7 +244,48 @@
 									.point("cluj", 214, 235)
 									.point("salaj", 182, 204)
 					                .debug(false);
-		
+
+		        bubbleOverlayChart1.width(600)
+                .height(450)
+                .dimension(locationDimension)
+                .group(authorizationsByCity)
+                .radiusValueAccessor(function(p) { // bubble radius
+                	var radius = 0;
+                	if (!p) return 1;
+                	if (p.value.count > 0) {
+                		radius = (p.value.count - MIN_COUNT) / (MAX_COUNT - MIN_COUNT) * 1000;
+                	}
+                	if (p.value.count == MAX_COUNT) {
+                		radius = 1000;
+                	}
+                	radius = Math.max(0, radius);
+                	radius = Math.min(radius, 1000);
+
+                	return radius;
+                })
+                .r(d3.scale.linear().domain([0, 10000]))
+                .colors(["#F5AEB1", "#F59DA1", "#ff7373","#ff4040","#ff0000","#F00C17", "#D40813", "#C7040E", "#a60000", "#8C0707"])
+                .colorDomain([0, 100])
+                .colorAccessor(function(p) { // bubble color
+                	if (!p) return 1;
+                	var ratio = 0;
+                	if (p.value.totalReimbursement > 0) {
+                		ratio = Math.abs(Math.log(((p.value.totalReimbursement - MIN_REIMBURSEMENT) / (MAX_REIMBURSEMENT - MIN_REIMBURSEMENT)))) * 10;
+                	}
+                	if (p.value.totalReimbursement == MAX_REIMBURSEMENT) {
+                		ratio = 100;
+                	}
+                	ratio = Math.max(0, ratio);
+                	ratio = Math.min(ratio, 100);
+                	
+                    return ratio;
+                })
+                .renderLabel(false)
+            	.point("bucuresti", 322, 293)
+                .point("suceava", 378,352)
+				.point("iasi", 399, 179)
+                .debug(false);
+
 		        genericTimeChart.width(360)
 								.rangeChart(subcaseTimeChart	)
 				                .height(180)
@@ -252,7 +295,6 @@
 				                .valueAccessor(function(d) {
 				                    return d.value.count;
 				                })
-	//				                .stack(authorizationsByYear, "Sume solicitate", function(d) { return d.value.totalRequested; })
 				                .x(d3.scale.linear().domain([2008, 2014]))
 				                .xUnits(function(){return 11;})
 				                .renderHorizontalGridLines(true)
