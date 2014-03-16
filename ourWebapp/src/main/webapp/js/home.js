@@ -31,6 +31,13 @@ $(".five").on("mouseout", function(){
 	$(".five").removeClass("op");
 });
 
+$(".node.three").on("click",function(){
+	window.location = "index.html";
+});
+$(".node.four").on("click",function(){
+	window.location = "brokenstreets.html";
+});
+
 $(".root").on("click", function(){
 	$(".link").toggleClass("myhidden");
 	$(".node").toggleClass("myhidden");
