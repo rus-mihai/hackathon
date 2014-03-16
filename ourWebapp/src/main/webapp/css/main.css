@@ -1,3 +1,12 @@
+body{
+position : relative;
+font-family: Sans-serif !important;
+}
+
+h3{
+	font-family: Sans-serif !important;
+}
+
 header {
 	height: 30px;
 	background-color: #F4F4F4;	
@@ -7,6 +16,7 @@ section#body {
 	display: block;
 	margin: auto;
 	width: 1000px;
+	padding-bottom : 150px;
 }
 
 header label {
@@ -27,6 +37,16 @@ header .page-title {
     font-style: italic;
     font-weight: bold;
     text-transform: uppercase;
+}
+
+header .back {
+	float: left;
+    margin-left: 10px;
+    margin-top: 6px;
+    color: #999;
+    font-size: 14px;
+    font-style: italic;
+    font-weight: bold;
 }
 
 header .bubble-link {
