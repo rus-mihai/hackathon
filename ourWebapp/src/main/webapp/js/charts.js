@@ -274,7 +274,7 @@
 				                .valueAccessor(function(d) {
 				                    return d.value.totalReimbursement;
 				                })
-				                .x(d3.scale.linear().domain([2008, 2012]))
+				                .x(d3.scale.linear().domain([2008, 2014]))
 				                .renderHorizontalGridLines(true)
 				                .elasticY(true)
 				                .brushOn(true)
