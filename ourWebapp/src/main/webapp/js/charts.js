@@ -197,7 +197,8 @@
 					                	if (d)
 						                    return "Judet: " + d.key.substring(0, 1).toUpperCase() + d.key.substring(1)
 						                            + "\nNumarul de proiecte: " + numberFormat(d.value.count)
-						                            + "\nSuma rambursata: " + numberFormat(d.value.totalReimbursement) + " RON";
+						                            + "\nSuma rambursata: " + numberFormat(d.value.totalReimbursement) + " RON"
+						                            + "\nSuma Autorizata: " + numberFormat(d.value.totalAuthorised) + " RON";
 					                })
 					                .renderLabel(false)
 				                	.point("bihor", 132, 224)
