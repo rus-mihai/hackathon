@@ -18,7 +18,7 @@
 
 	    $.ajax({
 			type: "POST",
-			url: 'http://192.168.0.110:9200/excel_river/doc/_search',
+			url: 'http://192.168.0.100:9200/excel_river/doc/_search',
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			data: {
@@ -169,9 +169,9 @@
 				                    return radius;
 				                })
 				                .r(d3.scale.linear().domain([0, 10000]))
-				                .colors(["#ff7373","#ff4040","#ff0000","#bf3030","#a60000"])
+				                .colors(["#F5AEB1", "#F59DA1", "#ff7373","#ff4040","#ff0000","#F00C17", "#D40813", "#C7040E", "#a60000", "#8C0707"])
 				                .colorDomain([0, 100])
-				                .colorAccessor(function(p) {
+				                .colorAccessor(function(p) { // bubble color
 				                	var ratio = 0;
 				                	if (p.value.totalReimbursement > 0) {
 				                		ratio = Math.abs(Math.log(((p.value.totalReimbursement - MIN_REIMBURSEMENT) / (MAX_REIMBURSEMENT - MIN_REIMBURSEMENT)))) * 10;
